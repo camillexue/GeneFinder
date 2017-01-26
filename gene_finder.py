@@ -30,9 +30,15 @@ def get_complement(nucleotide):
     >>> get_complement('C')
     'G'
     """
+    if nucleotide == 'A':
+        return 'T'
+    elif nucleotide == 'T':
+        return 'A'
+    elif nucleotide == 'C':
+        return 'G'
+    elif nucleotide == 'G':
+        return 'C'
     # TODO: implement this
-    pass
-
 
 def get_reverse_complement(dna):
     """ Computes the reverse complementary sequence of DNA for the specfied DNA
@@ -45,8 +51,11 @@ def get_reverse_complement(dna):
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
     """
+    reverse_comp = ''
+    for i in reversed(dna):
+        reverse_comp = reverse_comp +  get_complement(i)
+    return reverse_comp
     # TODO: implement this
-    pass
 
 
 def rest_of_ORF(dna):
@@ -62,8 +71,15 @@ def rest_of_ORF(dna):
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
     """
-    # TODO: implement this
-    pass
+    stop_codons = ['TGA', 'TAA', 'TAG']
+    for i in range(0, len(dna), 3): #goes in steps of three through dna
+        codon = dna[i:i+3] #codon is set of three
+        if codon in stop_codons: #checks if it's in the stop_codons list
+            return dna[0:i]
+        else:
+            continue
+    return dna
+
 
 
 def find_all_ORFs_oneframe(dna):
@@ -79,7 +95,17 @@ def find_all_ORFs_oneframe(dna):
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
     """
+    all_orfs = []
+    end = -1 #for keeping track of the end of an ORF
+    for i in range(0, len(dna), 3):
+        codon = dna[i:i+3]
+        if codon == 'ATG' and i > end: #makes sure non-nested by making sure it's after the end of the last orf
+            all_orfs.append(rest_of_ORF(dna[i:len(dna)])) #adds the orf to the list
+            end = len(str(rest_of_ORF(dna[i:len(dna)]))) #marks end of orf
+        else:
+            continue
     # TODO: implement this
+    return all_orfs
     pass
 
 
@@ -96,6 +122,12 @@ def find_all_ORFs(dna):
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
     """
+    all_orfs_all_frames = []
+    all_orfs_all_frames.extend(find_all_ORFs_oneframe(dna))
+    all_orfs_all_frames.extend(find_all_ORFs_oneframe(dna[1:]))
+    all_orfs_all_frames.extend(find_all_ORFs_oneframe(dna[2:]))
+
+    return all_orfs_all_frames
     # TODO: implement this
     pass
 
@@ -109,6 +141,11 @@ def find_all_ORFs_both_strands(dna):
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
+    all_orfs_both_strands =[]
+    all_orfs_both_strands.extend(find_all_ORFs(dna))
+    all_orfs_both_strands.extend(find_all_ORFs(get_reverse_complement(dna)))
+
+    return all_orfs_both_strands
     # TODO: implement this
     pass
 
@@ -119,6 +156,9 @@ def longest_ORF(dna):
     >>> longest_ORF("ATGCGAATGTAGCATCAAA")
     'ATGCTACATTCGCAT'
     """
+    all_orf = find_all_ORFs_both_strands(dna)
+    long_orf = max(all_orf, key = len) #finds longest string in all_orf
+    return long_orf
     # TODO: implement this
     pass
 
@@ -163,4 +203,11 @@ def gene_finder(dna):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    # doctest.testmod()
+    #doctest.run_docstring_examples(get_complement, globals(), verbose=True)
+    #doctest.run_docstring_examples(get_reverse_complement, globals(), verbose=True)
+    #doctest.run_docstring_examples(rest_of_ORF, globals(), verbose=True)
+    #doctest.run_docstring_examples(find_all_ORFs_oneframe, globals(), verbose=True)
+    #doctest.run_docstring_examples(find_all_ORFs, globals(), verbose=True)
+    #doctest.run_docstring_examples(find_all_ORFs_both_strands, globals(), verbose=True)
+    #doctest.run_docstring_examples(longest_ORF, globals(), verbose=True)
