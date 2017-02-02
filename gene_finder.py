@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-YOUR HEADER COMMENT HERE
+Finds genes in salmonella dna
 
 @author: Camille Xue
 
@@ -125,8 +125,6 @@ def find_all_ORFs(dna):
     all_orfs_all_frames.extend(find_all_ORFs_oneframe(dna[2:]))
 
     return all_orfs_all_frames
-    # TODO: implement this
-    pass
 
 
 def find_all_ORFs_both_strands(dna):
@@ -143,8 +141,6 @@ def find_all_ORFs_both_strands(dna):
     all_orfs_both_strands.extend(find_all_ORFs(get_reverse_complement(dna)))
 
     return all_orfs_both_strands
-    # TODO: implement this
-    pass
 
 
 def longest_ORF(dna):
@@ -156,8 +152,6 @@ def longest_ORF(dna):
     all_orf = find_all_ORFs_both_strands(dna)
     long_orf = max(all_orf, key=len)  # finds longest string in all_orf
     return long_orf
-    # TODO: implement this
-    pass
 
 
 def longest_ORF_noncoding(dna, num_trials):
@@ -172,9 +166,6 @@ def longest_ORF_noncoding(dna, num_trials):
         dna = shuffle_string(dna)
         all_longest.append(longest_ORF(dna))
     return len(max(all_longest))
-
-    # TODO: implement this
-    pass
 
 
 def coding_strand_to_AA(dna):
