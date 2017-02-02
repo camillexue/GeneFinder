@@ -222,7 +222,7 @@ def gene_finder(dna):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.testmod(verbose=True)
 
     #doctest.run_docstring_examples(get_complement, globals(), verbose=True)
     #doctest.run_docstring_examples(get_reverse_complement, globals(), verbose=True)
