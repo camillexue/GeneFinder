@@ -31,14 +31,11 @@ def get_complement(nucleotide):
     >>> get_complement('C')
     'G'
     """
-    if nucleotide == 'A':
-        return 'T'
-    elif nucleotide == 'T':
-        return 'A'
-    elif nucleotide == 'C':
-        return 'G'
-    elif nucleotide == 'G':
-        return 'C'
+    nucleotides = {'A': 'T',
+                   'T': 'A',
+                   'C': 'G',
+                   'G': 'C'}
+    return nucleotides[nucleotide]
 
 
 def get_reverse_complement(dna):
@@ -100,7 +97,7 @@ def find_all_ORFs_oneframe(dna):
         codon = dna[i:i+3]
         if codon == 'ATG' and i > end:  # makes sure non-nested by making sure it's after the end of the last orf
             all_orfs.append(rest_of_ORF(dna[i:len(dna)]))  # adds the orf to the list
-            end = len(str(rest_of_ORF(dna[i:len(dna)])))  # marks end of orf
+            end = i + len(str(rest_of_ORF(dna[i:len(dna)])))  # marks end of orf
         else:
             continue
     return all_orfs
@@ -161,10 +158,8 @@ def longest_ORF_noncoding(dna, num_trials):
         dna: a DNA sequence
         num_trials: the number of random shuffles
         returns: the maximum length longest ORF """
-    all_longest = []
-    for n in range(0, num_trials):
-        dna = shuffle_string(dna)
-        all_longest.append(longest_ORF(dna))
+    all_longest = [longest_ORF(shuffle_string(dna)) for n in range(0, num_trials)]  # changed into list comprehension
+
     return len(max(all_longest))
 
 
@@ -182,15 +177,12 @@ def coding_strand_to_AA(dna):
         >>> coding_strand_to_AA("ATGCCCGCTTT")
         'MPA'
     """
-    amino_acid = []
     if len(dna) % 3 == 1:
         dna = dna[:-1]
     elif len(dna) % 3 == 2:
         dna = dna[0:-2]
 
-    for i in range(0, len(dna), 3):  # goes in steps of three through dna
-        codon = dna[i:i+3]  # codon is set of three
-        amino_acid.append(aa_table[codon])
+    amino_acid = [aa_table[dna[i:i+3]] for i in range(0, len(dna), 3)]  # changed into list comprehension
     return ''.join(amino_acid)
 
 
@@ -200,14 +192,11 @@ def gene_finder(dna):
         dna: a DNA sequence
         returns: a list of all amino acid sequences coded by the sequence dna.
     """
-    aa_strands = []
-    threshhold = longest_ORF_noncoding(dna, 1500)
+    threshold = longest_ORF_noncoding(dna, 1500)
     all_ORF = find_all_ORFs_both_strands(dna)
-    for i in all_ORF:
-        if len(i) >= threshhold:
-            aa_strands.append(coding_strand_to_AA(i))
-        else:
-            continue
+    aa_strands = [coding_strand_to_AA(i) for i in all_ORF if len(i) >= threshold]
+    # changed into list comprehension
+
     return aa_strands
 
 
@@ -217,7 +206,7 @@ if __name__ == "__main__":
 
     #doctest.run_docstring_examples(get_complement, globals(), verbose=True)
     #doctest.run_docstring_examples(get_reverse_complement, globals(), verbose=True)
-    ##doctest.run_docstring_examples(rest_of_ORF, globals(), verbose=True)
+    #doctest.run_docstring_examples(rest_of_ORF, globals(), verbose=True)
     #doctest.run_docstring_examples(find_all_ORFs_oneframe, globals(), verbose=True)
     #doctest.run_docstring_examples(find_all_ORFs, globals(), verbose=True)
     #doctest.run_docstring_examples(find_all_ORFs_both_strands, globals(), verbose=True)
